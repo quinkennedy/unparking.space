@@ -6,6 +6,7 @@ import opc, time, math
 pixels = [(0,0,0) for i in range(512)]
 # channel 1 is dicey, so we'll skip it
 LED_OFFSET = 64
+NUM_HANDS = 5
 
 class Hand:
   NUM_LEDS = 6
@@ -38,7 +39,7 @@ class Hand:
     self.setColor(currColor)
 
 client = opc.Client('localhost:7890')
-hands = [Hand(0, client)]
+hands = [Hand(i, client) for i in range(NUM_HANDS)]
 
 while True:
   for hand in hands:
