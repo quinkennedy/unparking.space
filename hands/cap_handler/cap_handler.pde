@@ -90,9 +90,11 @@ void serialEvent(Serial p){
     }
     
     } catch(Exception e){
-      println("err: ");
+      println("err parsing \"" + in + "\"");
       println(e);
     }
+  } else {
+    println("\"" + in + "\" not parsed");
   }
 }
 

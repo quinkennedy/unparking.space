@@ -5,7 +5,7 @@ boolean[] wordOn = new boolean[7];
 public class Words{
   int x;
   int y;
-  int numHands = 0;
+  int numWords = 0;
   int[] wordIndices = new int[]{0, 1, 2, 3, 4, 5, 6};
   ColorWheel c;
   
@@ -28,36 +28,39 @@ public class Words{
       }
     }
     
+    currNumHands = (int)constrain(currNumHands, 0, numHands.getValue());
+    int targetWords = round(currNumHands / numHands.getValue() * wordIndices.length);
+    
     //add hands if more were touched since last frame
-    while(currNumHands > numHands){
-      if (numHands == wordIndices.length - 1){
+    while(targetWords > numWords){
+      if (numWords == wordIndices.length - 1){
         //nothing to do, the last word is always the last word
       } else {
-        int chosenIndex = floor(random(numHands, wordIndices.length - 1));
+        int chosenIndex = floor(random(numWords, wordIndices.length - 1));
         int temp = wordIndices[chosenIndex];
-        wordIndices[chosenIndex] = wordIndices[numHands];
-        wordIndices[numHands] = temp;
+        wordIndices[chosenIndex] = wordIndices[numWords];
+        wordIndices[numWords] = temp;
       }
-      numHands++;
+      numWords++;
     }
     
     //remove hands if more were touched since last frame
-    while(currNumHands < numHands){
-      if (numHands == wordIndices.length){
+    while(targetWords < numWords){
+      if (numWords == wordIndices.length){
         //nothing to do, the last word is always the first to disappear
       } else {
-        int chosenIndex = floor(random(0, numHands));
+        int chosenIndex = floor(random(0, numWords));
         int temp = wordIndices[chosenIndex];
-        wordIndices[chosenIndex] = wordIndices[numHands - 1];
-        wordIndices[numHands - 1] = temp;
+        wordIndices[chosenIndex] = wordIndices[numWords - 1];
+        wordIndices[numWords - 1] = temp;
       }
-      numHands--;
+      numWords--;
     }
     
     //update the wordOn array based on 
     // the current index arrangement and number of hands
     for(int i = 0; i < wordIndices.length; i++){
-      wordOn[wordIndices[i]] = (i < numHands);
+      wordOn[wordIndices[i]] = (i < numWords);
     }
     
     //draw active words

@@ -1,19 +1,20 @@
 import controlP5.*;
 import mqtt.*;
-import processing.serial.*;
 import java.util.*;
 
 ControlP5 cp5;
-Serial serial;
 OPC opc;
 MQTTClient client;
 
 Hand[] hands;
 Words words;
 Ambient ambient;
+Numberbox numHands;
+Numberbox ambientTimeout;
 
 ColorWheel handBaseColor;
 ColorWheel handTouchColor;
+int lastInteractionAt;
 
 void setup(){
   size(500, 660);
@@ -26,10 +27,11 @@ void setup(){
   handTouchColor.setRGB((int)handTouchColor.getValue());
   client = new MQTTClient(this);
   client.connect("mqtt://localhost:1883", "brain");
+  lastInteractionAt = millis();
 }
 
 void draw(){
-  background(100);
+  background(0);
   for(Hand hand : hands){
     hand.draw();
   }
@@ -38,6 +40,7 @@ void draw(){
 }
 
 void handleTouch(char c){
+  lastInteractionAt = millis();
   switch(c){
     case '0':
     hands[0].touched();
@@ -64,6 +67,7 @@ void handleTouch(char c){
 }
 
 void handleRelease(char c){
+  lastInteractionAt = millis();
   switch(c){
     case '0':
     hands[0].released();
@@ -87,28 +91,6 @@ void handleRelease(char c){
     hands[6].released();
     break;
   }
-}
-
-void serialEvent(Serial port){
-  String in = port.readString();
-  print("got " + in);
-  String[] pieces = in.trim().split(" ");
-  print(" " + pieces.length);
-  if (pieces.length == 2){
-    print(":"+pieces[0]+","+pieces[1]+":");
-    switch(pieces[1]){
-      case "touched":
-      handleTouch(pieces[0].charAt(0));
-      break;
-      case "released":
-      handleRelease(pieces[0].charAt(0));
-      break;
-      default:
-      print(" didn't match");
-      break;
-    }
-  }
-  println();
 }
 
 void keyPressed() {

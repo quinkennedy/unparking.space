@@ -2,6 +2,7 @@ public class Ambient{
   int x;
   int y;
   ColorWheel c;
+  float period = 10000;
   
   public Ambient(int x, int y){
     this.x = x;
@@ -14,7 +15,18 @@ public class Ambient{
   }
   
   public void draw(){
-    fill(c.getRGB());
+    int startPopAt = (int)(lastInteractionAt + ambientTimeout.getValue() * 1000);
+    int popX = millis() - startPopAt;
+    color currColor = c.getRGB();
+    if (popX > 0){
+      float val = sin(popX / period * TWO_PI);
+      if (val > 0){
+        currColor = lerpColor(currColor, color(255), val);
+      } else {
+        currColor = lerpColor(currColor, color(0), -val);
+      }
+    }
+    fill(currColor);
     noStroke();
     rect(x, y, 64, 10);
   }

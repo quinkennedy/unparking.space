@@ -9,7 +9,10 @@ public class Hand{
   Toggle enabled;
   Numberbox handIndex;
   Numberbox triggerCutoff;
+  Numberbox releaseDelay;
   boolean touched = false;
+  int releasedAt;
+  boolean released = true;
   
   public Hand(int y, int h, ControlP5 cp5){
     this.y = y;
@@ -20,7 +23,7 @@ public class Hand{
     enabled = cp5.addToggle("enable_"+y)
       .setLabel("en")
       .setState(true)
-      .setSize(20, 20)
+      .setSize(10, 10)
       .setPosition(width - 25, y);
     handIndex = cp5.addNumberbox("index_"+y)
       .setLabel("index")
@@ -28,13 +31,19 @@ public class Hand{
       .setSize(45, 10)
       .setMin(0)
       .setMax(10)
-      .setPosition(width - 75, y);
+      .setPosition(width - 100, y);
     triggerCutoff = cp5.addNumberbox("cutoff_"+y)
       .setLabel("cutoff")
       .setValue(50)
       .setSize(45, 10)
       .setMin(0)
-      .setPosition(width - 75, y + 25);
+      .setPosition(width - 100, y + 25);
+    releaseDelay = cp5.addNumberbox("release_"+y)
+      .setLabel("release")
+      .setValue(100)
+      .setSize(45, 10)
+      .setMin(0)
+      .setPosition(width - 50, y + 25);
        //.registerProperty("enabled")
        //.plugTo(this);
     //cp5.end();
@@ -53,6 +62,13 @@ public class Hand{
   }
   
   public void draw(){
+    //if the sensor is confirmed not touched for long enough
+    // send the release message
+    if (!released && !touched && releasedAt + releaseDelay.getValue() < millis()){
+      released = true;
+      broadcast();
+    }
+    //draw the graphs
     if (enabled.getState() && sampleStart > 1){
       //erase previously shown value
       stroke(255);
@@ -73,18 +89,23 @@ public class Hand{
   }
   
   public void addSample(int base, int filtered){
-    max = max(max, max(base + 1, filtered + 1));
-    min = min(min, min(base - 1, filtered - 1));
-    
     samples[0][sampleStart] = base;
     samples[1][sampleStart] = filtered;
-    sampleStart = (sampleStart + 1) % samples.length;
+    sampleStart = (sampleStart + 1) % samples[0].length;
     
     if (enabled.getState()){
+      max = max(max, max(base + 1, filtered + 1));
+      min = min(min, min(base - 1, filtered - 1));
+    
       if (touched && filtered > triggerCutoff.getValue()){
+        //we might have a release, but wait until the timeout to be sure
         touched = false;
+        releasedAt = millis();
       } else if (!touched && filtered < triggerCutoff.getValue()){
+        //immediately accept touches
         touched = true;
+        released = false;
+        broadcast();
       }
     }
   }

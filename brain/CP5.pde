@@ -1,6 +1,5 @@
 void initCP5(){
   cp5 = new ControlP5(this);
-  ArrayList<String> ports = new ArrayList<String>(Arrays.asList(Serial.list()));
   int nbw = 100;
   int nbh = 20;
   int x = 0, y = 0;
@@ -42,17 +41,17 @@ void initCP5(){
      .setGroup(g1);
   cp5.addNumberbox("w7l", wordLengths[6], x-- * nbw, y++ * nbh * 2, nbw, nbh).setGroup(g1);
   
-  cp5.addScrollableList("portSelect")
-     .setPosition(x * nbw, y* nbh * 2)
-     .addItems(ports)
-     .setGroup(g1);
-  cp5.getProperties().addSet("ignored");
-  cp5.getProperties().move(cp5.getController("portSelect"), "default", "ignored");
-}
-
-public void portSelect(int n){
-  serial = new Serial(this, Serial.list()[n], 9600);
-  serial.bufferUntil('\n');
+  
+numHands = cp5.addNumberbox("num_hands")
+  .setValue(4)
+  .setPosition(x++ * nbw, y * nbh * 2)
+  .setSize(nbw, nbh)
+  .setGroup(g1);
+ambientTimeout = cp5.addNumberbox("amb_timeout")
+  .setValue(30)
+  .setPosition(x-- * nbw, y++ * nbh * 2)
+  .setSize(nbw, nbh)
+  .setGroup(g1);
 }
 
 public void w1s(int v){
