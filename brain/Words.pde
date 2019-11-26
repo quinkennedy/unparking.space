@@ -3,11 +3,20 @@ int[] wordOffsets = new int[]{0, 1, 2, 3, 5, 1, 2};
 boolean[] wordOn = new boolean[7];
 
 public class Words{
+  int x;
+  int y;
   int numHands = 0;
   int[] wordIndices = new int[]{0, 1, 2, 3, 4, 5, 6};
+  ColorWheel c;
   
-  public Words(PApplet parent){
-    parent.registerMethod("draw", this);
+  public Words(int x, int y){
+    this.x = x;
+    this.y = y;
+    opc.ledStrip(64*5, 64, x + 31, y + 5, 1, 0, false);
+    c = cp5.addColorWheel("words")
+       .setPosition(65, y)
+       .registerProperty("value")
+       .removeProperty("ArrayValue");
   }
   
   public void draw(){
@@ -58,8 +67,11 @@ public class Words{
     for(int i = 0; i < wordLengths.length; i++){
       x += wordOffsets[i];
       if (wordOn[i]){
-        rect(x, 0, wordLengths[i], 10);
+        fill(c.getRGB());
+      } else {
+        fill(0);
       }
+      rect(x, 0, wordLengths[i], 10);
       x += wordLengths[i];
     }
   }

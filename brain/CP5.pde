@@ -41,8 +41,6 @@ void initCP5(){
      .setPosition(x++ * nbw, y * nbh * 2)
      .setGroup(g1);
   cp5.addNumberbox("w7l", wordLengths[6], x-- * nbw, y++ * nbh * 2, nbw, nbh).setGroup(g1);
- 
-  cp5.loadProperties(("prop.json"));
   
   cp5.addScrollableList("portSelect")
      .setPosition(x * nbw, y* nbh * 2)
