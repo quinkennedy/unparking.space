@@ -38,7 +38,11 @@ public void portSelect(int n){
 
 void draw(){
   for(Hand hand : hands){
-    hand.draw();
+    try{
+      hand.draw();
+    } catch(Exception e){
+      println(e);
+    }
   }
   /*
   background(255);
